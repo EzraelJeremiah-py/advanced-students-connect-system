@@ -34,3 +34,18 @@ def reshare_post(post_id: int, student_id: int, db=Depends(get_db)):
     db.commit()
     return {"message": "Post reshared"}
 
+@app.get("/feed/")
+def get_feed(db=Depends(get_db)):
+    posts = db.query(Post).all()
+    reshares = db.query(Reshare).all()
+    feed = []
+
+    for post in posts:
+        feed.append({"type": "post", "id": post.id, "content": post.content, "author": post.author_id})
+
+    for reshare in reshares:
+        feed.append({"type": "reshare", "post_id": reshare.post_id, "student_id": reshare.student_id})
+
+    return {"feed": feed}
+
+
